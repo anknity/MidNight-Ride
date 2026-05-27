@@ -1,0 +1,6 @@
+{
+  "name": "Midnight Rides",
+  "description": "A premium nostalgic ride-booking simulator featuring custom vehicle configurations, ride scheduling, live dispatch tracking, and classic routes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

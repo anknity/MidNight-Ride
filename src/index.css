@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Oswald:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #C8553D;
+  --color-brand-secondary: #F2D06B;
+  --color-accent-teal: #A8D0C8;
+  --color-accent-teal-dark: #2A6F66;
+  --color-neutral-cream: #FDF8E8;
+  --color-neutral-surface: #F9F1DC;
+  --color-neutral-surface-light: #FDFDF7;
+  --color-text-primary: #222222;
+  --color-text-secondary: #666666;
+  --color-footer-bg: #4A3B32;
+
+  --font-primary: "Oswald", sans-serif;
+  --font-secondary: "DM Sans", sans-serif;
+}
+
+/* Base style matching body */
+body {
+  font-family: var(--font-secondary);
+  background-color: #ffffff;
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+.glow-ambient {
+  animation: pulseGlow 4s infinite ease-in-out;
+}
+

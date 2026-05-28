@@ -4,7 +4,7 @@ export interface RideOption {
   price: number;
   description: string;
   image: string;
-  category: 'standard' | 'premium' | 'hourly' | 'outstation' | 'side' | 'beverage';
+  category: 'standard' | 'premium' | 'hourly' | 'outstation' | 'side' | 'beverage' | 'bike' | 'auto' | 'cab' | 'parcel' | 'travel' | 'metro';
   tags?: string[];
   rating?: number;
 }
@@ -43,7 +43,7 @@ export interface ScheduledRide {
   pickupDate: string;
   timeSlot: string;
   passengerCount: number;
-  vehicleType: 'Silent Premium Sedan' | 'Luxury Classic Limousine' | 'Nocturnal Cruiser SUV' | 'City Retro TukTuk';
+  vehicleType: 'Silent Premium Sedan' | 'Safe-Shield Bike-Taxi (Verified Pilot)' | 'Pink-Shield Premium Auto (Female Pilot Match)' | 'Sovereign Queen Shield Cab (Internal Partition)' | 'Express Safe Metro Feeder (Patrolled Group)';
   notes?: string;
   createdAt: string;
 }

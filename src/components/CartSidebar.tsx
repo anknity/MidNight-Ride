@@ -44,7 +44,7 @@ export default function CartSidebar({
 
   // Calculators
   const itemsSubtotal = cartItems.reduce((sum, item) => sum + item.rideOption.price * item.passengers, 0);
-  const dispatchFee = deliveryMethod === 'delivery' ? 2.50 : 0;
+  const dispatchFee = deliveryMethod === 'delivery' ? 25.00 : 0;
   
   let discountAmount = 0;
   if (appliedDiscount) {
@@ -176,7 +176,7 @@ export default function CartSidebar({
                             </p>
                           )}
                           <div className="text-xs font-bold text-brand-primary">
-                            ${(item.rideOption.price * item.passengers).toFixed(2)}
+                            ₹{(item.rideOption.price * item.passengers).toFixed(2)}
                           </div>
                         </div>
 
@@ -300,23 +300,23 @@ export default function CartSidebar({
                       </span>
                       <div className="flex justify-between">
                         <span>Base Fare Subtotal:</span>
-                        <span className="font-mono">${itemsSubtotal.toFixed(2)}</span>
+                        <span className="font-mono">₹{itemsSubtotal.toFixed(2)}</span>
                       </div>
                       {deliveryMethod === 'delivery' && (
                         <div className="flex justify-between">
                           <span>Nightly Dispatch Surcharge:</span>
-                           <span className="font-mono">${dispatchFee.toFixed(2)}</span>
+                           <span className="font-mono">₹{dispatchFee.toFixed(2)}</span>
                         </div>
                       )}
                       {appliedDiscount && (
                         <div className="flex justify-between text-emerald-600">
                           <span>VIP Fare Credit Discount:</span>
-                          <span className="font-mono">-${discountAmount.toFixed(2)}</span>
+                          <span className="font-mono">-₹{discountAmount.toFixed(2)}</span>
                         </div>
                       )}
                       <div className="flex justify-between font-bold text-sm border-t pt-2 text-[#222]">
                         <span>Estimated Total:</span>
-                        <span className="font-primary text-brand-primary font-bold text-base">${grandTotal.toFixed(2)}</span>
+                        <span className="font-primary text-brand-primary font-bold text-base">₹{grandTotal.toFixed(2)}</span>
                       </div>
                     </div>
 

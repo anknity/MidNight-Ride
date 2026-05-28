@@ -10,10 +10,10 @@ interface TableReservationModalProps {
 }
 
 const RIDE_OPTIONS_MAP = [
-  { id: 'sedan', label: 'Premium Sedan', type: 'Silent Premium Sedan' as const, seats: 4, reserved: false },
-  { id: 'limo', label: 'Classic Limousine', type: 'Luxury Classic Limousine' as const, seats: 4, reserved: false },
-  { id: 'suv', label: 'Cruiser SUV', type: 'Nocturnal Cruiser SUV' as const, seats: 6, reserved: false },
-  { id: 'tuktuk', label: 'Retro TukTuk', type: 'City Retro TukTuk' as const, seats: 2, reserved: true }
+  { id: 'bike', label: 'Safe Bike-Taxi', type: 'Safe-Shield Bike-Taxi (Verified Pilot)' as const, seats: 1, reserved: false },
+  { id: 'auto', label: 'Pink-Shield Auto', type: 'Pink-Shield Premium Auto (Female Pilot Match)' as const, seats: 3, reserved: false },
+  { id: 'cab', label: 'Queen Guard Cab', type: 'Sovereign Queen Shield Cab (Internal Partition)' as const, seats: 4, reserved: false },
+  { id: 'shuttle', label: 'Metro Shuttle', type: 'Express Safe Metro Feeder (Patrolled Group)' as const, seats: 6, reserved: false }
 ];
 
 export default function TableReservationModal({ isOpen, onClose, onAddReservation }: TableReservationModalProps) {
@@ -27,7 +27,7 @@ export default function TableReservationModal({ isOpen, onClose, onAddReservatio
     specialRequests: ''
   });
 
-  const [selectedRideClass, setSelectedRideClass] = useState<string | null>('sedan');
+  const [selectedRideClass, setSelectedRideClass] = useState<string | null>('bike');
   const [ticketResult, setTicketResult] = useState<ScheduledRide | null>(null);
 
   const [isPending, startTransition] = useTransition();

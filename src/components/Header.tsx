@@ -42,12 +42,6 @@ export default function Header({ cartCount, onCartOpen, onScrollToSection, onSea
           >
             RIDES & GEAR
           </button>
-          <button 
-            onClick={() => handleNavClick('customizer')}
-            className="font-primary font-medium text-sm tracking-widest text-text-primary hover:text-brand-primary cursor-pointer transition-colors text-brand-primary animate-pulse"
-          >
-            CRAFT RIDE
-          </button>
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -147,12 +141,6 @@ export default function Header({ cartCount, onCartOpen, onScrollToSection, onSea
             className="text-left font-primary font-semibold text-lg hover:text-brand-primary"
           >
             RIDES & GEAR
-          </button>
-          <button 
-            onClick={() => handleNavClick('customizer')}
-            className="text-left font-primary font-semibold text-lg text-brand-primary"
-          >
-            CRAFT CUSTOM RIDE
           </button>
           <button 
             onClick={() => handleNavClick('locations')}

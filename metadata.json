@@ -1,6 +1,6 @@
 {
   "name": "Midnight Rides",
-  "description": "A premium nostalgic ride-booking simulator featuring custom vehicle configurations, ride scheduling, live dispatch tracking, and classic routes.",
+  "description": "A secure late-night ride-booking service featuring verified captains, continuous GPS-corridor telemetry, 6 core transit categories in INR format, and advanced women safety priority options.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

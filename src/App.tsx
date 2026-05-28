@@ -1,18 +1,103 @@
 import { useState, useTransition } from 'react';
 import Header from './components/Header';
-import BowlCustomizer from './components/BowlCustomizer';
 import TableReservationModal from './components/TableReservationModal';
 import CartSidebar from './components/CartSidebar';
 import ReviewSection from './components/ReviewSection';
 import CommunityModal from './components/CommunityModal';
 
-import { INITIAL_RIDE_OPTIONS, INITIAL_REVIEWS } from './data';
+import { INITIAL_RIDE_OPTIONS, INITIAL_REVIEWS, HUBS_LIST } from './data';
 import { BookingItem, RideOption, CustomerReview, ScheduledRide } from './types';
 import { 
   Car, Eye, Sparkles, Navigation, CalendarDays, MapPin, 
   HelpCircle, Printer, Heart, Star, Shield, ArrowUpRight, 
   ChevronRight, Compass, MessageSquareCode
 } from 'lucide-react';
+
+// ==================== INTERACTIVE WOMEN-SAFETY ALARM WIDGET SIMULATOR ====================
+function SOSAlarmWidget() {
+  const [sosState, setSosState] = useState<'idle' | 'triggering' | 'active'>('idle');
+  const [countdown, setCountdown] = useState(5);
+  const [timerId, setTimerId] = useState<any>(null);
+
+  const startSOS = () => {
+    setSosState('triggering');
+    setCountdown(5);
+    const interval = setInterval(() => {
+      setCountdown(c => {
+        if (c <= 1) {
+          clearInterval(interval);
+          setSosState('active');
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    setTimerId(interval);
+  };
+
+  const cancelSOS = () => {
+    if (timerId) clearInterval(timerId);
+    setSosState('idle');
+    setCountdown(5);
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center p-2">
+      {sosState === 'idle' && (
+        <div className="space-y-3 flex flex-col items-center">
+          <button 
+            onClick={startSOS}
+            className="w-24 h-24 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-primary font-bold text-lg flex items-center justify-center border-4 border-rose-300 shadow-md animate-pulse cursor-pointer uppercase transition-transform hover:scale-105 active:scale-95"
+            title="Trigger SOS Alarm"
+          >
+            SOS
+          </button>
+          <span className="text-[11px] text-text-secondary leading-normal">
+            Trigger check-in and location stream simulation.
+          </span>
+        </div>
+      )}
+
+      {sosState === 'triggering' && (
+        <div className="space-y-4 flex flex-col items-center w-full animate-pulse">
+          <div className="w-24 h-24 rounded-full bg-orange-500 text-white font-primary font-bold text-3xl flex flex-col items-center justify-center border-4 border-orange-200">
+            <span>{countdown}</span>
+            <span className="text-[8px] tracking-widest uppercase">Secs</span>
+          </div>
+          <div className="space-y-1 text-center">
+            <span className="text-xs font-bold text-orange-600 uppercase block animate-bounce">Broadcasting Geolocation Coordinates...</span>
+            <button 
+              onClick={cancelSOS}
+              className="text-[10px] font-semibold text-text-primary underline uppercase hover:text-rose-600"
+            >
+              Cancel Alert
+            </button>
+          </div>
+        </div>
+      )}
+
+      {sosState === 'active' && (
+        <div className="space-y-4 flex flex-col items-center w-full">
+          <div className="w-24 h-24 rounded-full bg-rose-700 text-white font-primary font-bold text-xs flex flex-col items-center justify-center border-4 border-rose-300 animate-ping">
+            <span className="font-extrabold uppercase">ACTIVE SOS</span>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center space-y-1.5 w-full">
+            <span className="text-rose-600 font-bold block text-xs animate-pulse">🚨 EMERGENCY TELEMETRY LOCK ON!</span>
+            <p className="text-[10px] text-text-secondary leading-snug">
+              Continuous location SMS broadcast dispatched to custom contacts! Secure Sentinel Patrol cruiser en-route.
+            </p>
+            <button 
+              onClick={cancelSOS}
+              className="bg-rose-600 hover:bg-rose-700 text-white font-primary font-semibold text-[10px] py-1.5 px-4 uppercase rounded transition-colors cursor-pointer"
+            >
+              Clear Alarm State
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function App() {
   // State elements
@@ -22,7 +107,7 @@ export default function App() {
   const [reservations, setReservations] = useState<ScheduledRide[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'standard' | 'premium' | 'hourly' | 'side' | 'beverage'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'bike' | 'auto' | 'cab'>('all');
 
   // Modal displays
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -41,8 +126,6 @@ export default function App() {
       document.getElementById('locations-anchor')?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'contact') {
       document.getElementById('footer-anchor')?.scrollIntoView({ behavior: 'smooth' });
-    } else if (sectionId === 'customizer') {
-      document.getElementById('customizer-section')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -61,11 +144,6 @@ export default function App() {
     });
 
     // Automatically trigger cart reveal to delight the passenger
-    setIsCartOpen(true);
-  };
-
-  const handleAddCustomBowlToCart = (customBookingItem: BookingItem) => {
-    setCart(prev => [...prev, customBookingItem]);
     setIsCartOpen(true);
   };
 
@@ -218,6 +296,201 @@ export default function App() {
           </div>
         </section>
 
+        {/* ==================== INR / WOMEN-SAFETY SERVICE SELECTOR GRID (Image 1) ==================== */}
+        <section id="services-selector" className="space-y-6 pt-4 animate-slideUp">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span className="text-brand-primary font-primary font-bold text-xs tracking-widest uppercase block mb-1">Interactive Booking Desk</span>
+              <h2 className="font-primary text-3xl md:text-4xl text-text-primary uppercase font-bold tracking-tight">Our Core Offerings</h2>
+              <p className="text-xs text-text-secondary leading-relaxed max-w-xl">
+                Click any service block below to instantly load matching safe fleets down below, pre-equipped with our premium Pink Shield safety diagnostics and vetted captains.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs font-bold font-primary px-3 py-1.5 rounded-full tracking-wider uppercase shadow-xs w-fit">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping inline-block" />
+              Pink Shield active: {HUBS_LIST.length} Kolkata Zones Protected
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { id: 'bike', title: 'Safe Bike-Taxi', desc: 'Secure, verified pilot with full ISI helmet support', img: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400', badge: 'Women Priority Match', safety: 'GPS Tracked' },
+              { id: 'bike', title: 'Midnight Express', desc: 'Express late-shift two-wheeler transit', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80&w=400', badge: 'Active Location Sharing', safety: 'Vetted Pilot' },
+              { id: 'bike', title: 'Electric Scooter', desc: 'Ultra-quiet eco cruising with backup premium support', img: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400', badge: 'Eco Protective Shield', safety: 'Pink Shield' },
+              { id: 'bike', title: 'Highway Cruiser', desc: 'Secure highway cruiser pillion for city bypass', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80&w=400', badge: 'Double Shock Cushioning', safety: '24/7 Patrol Guard' },
+              { id: 'auto', title: 'Pink-Shield Auto', desc: 'Enclosed three-wheel commuter autos for family peace', img: 'https://images.unsplash.com/photo-1566008889975-f286f4553e20?auto=format&fit=crop&q=80&w=400', badge: 'Female Captain Option', safety: 'Panic Alarm' },
+              { id: 'cab', title: 'Queen Cabin Cab', desc: 'Premium privacy car with physical partition screen', img: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=400', badge: 'Dual SOS Remote Link', safety: 'VIP Escort' }
+            ].map(srv => {
+              const isActive = selectedCategory === srv.id;
+              return (
+                <div 
+                  key={srv.title}
+                  onClick={() => {
+                    setSelectedCategory(srv.id as any);
+                    handleScrollToSection('menu');
+                  }}
+                  className={`group relative h-48 rounded-2xl border p-5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-neutral-cream border-brand-primary shadow-md ring-2 ring-brand-primary/20' 
+                      : 'bg-[#F9FAFB] hover:bg-white border-neutral-surface hover:border-brand-primary hover:shadow-lg'
+                  }`}
+                >
+                  {/* Text on left */}
+                  <div className="z-10 max-w-[65%] space-y-1">
+                    <div className="flex items-center gap-1">
+                      <span className="bg-[#C8553D] text-[#FFF] text-[8px] font-bold tracking-widest px-1.5 py-0.5 rounded uppercase font-primary block">
+                        {srv.safety}
+                      </span>
+                    </div>
+
+                    <h3 className="font-primary text-2xl font-bold uppercase text-text-primary leading-[0.95] group-hover:text-brand-primary transition-colors pt-1">
+                      {srv.title}
+                    </h3>
+                    <p className="text-[11px] text-text-secondary leading-snug font-medium pt-0.5">
+                      {srv.desc}
+                    </p>
+                  </div>
+
+                  {/* Safety details badge at bottom */}
+                  <div className="z-10 bg-[#FFF] border border-neutral-surface text-[9px] font-bold uppercase tracking-wider text-[#222] px-2.5 py-1 rounded-full w-fit">
+                    🛡️ {srv.badge}
+                  </div>
+
+                  {/* Overlapping rounded image on right */}
+                  <div className="absolute top-4 right-[-15px] w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-md z-0 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+                    <img 
+                      src={srv.img} 
+                      className="w-full h-full object-cover" 
+                      alt={srv.title}
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ==================== ACTIVE WOMEN-SAFETY SOS COMMAND & PATROL UNIT PANEL ==================== */}
+        <section id="sos-controller" className="bg-[#FFFDF4] border-4 border-brand-primary rounded-card p-6 md:p-8 shadow-md relative overflow-hidden">
+          <div className="absolute top-0 right-0 h-full w-[25%] bg-gradient-to-l from-brand-primary/5 to-transparent pointer-events-none pointer-events-none" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#222] font-primary block leading-none">
+                  🔐 SECURE PASSENGER PATROL CORRIDOR ACTIVE (WEST BENGAL & KOLKATA)
+                </span>
+              </div>
+
+              <h2 className="font-primary text-2xl md:text-3xl font-bold uppercase text-text-primary leading-tight">
+                24/7 Pink-Shield Sentinel Support
+              </h2>
+              
+              <p className="text-text-secondary text-xs md:text-sm leading-relaxed max-w-[95%]">
+                Our operations guarantee double-layer verification. Should you feel concerned at any point during a late night travel, trigger the instant dispatch simulated SOS switch. Our Command Desk will immediately initiate continuous video/audio listening, lock your vehicle speed, and live-alert Kolkata central patrol grids.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] font-bold font-primary uppercase tracking-wider text-text-primary pt-1">
+                <span className="flex items-center gap-1.5 bg-white border border-neutral-surface px-3 py-2 rounded">
+                  ✅ 100% Verified Female Captain Matches Option
+                </span>
+                <span className="flex items-center gap-1.5 bg-white border border-neutral-surface px-3 py-2 rounded">
+                  ✅ Live-Time Audio Compartment Partitions
+                </span>
+                <span className="flex items-center gap-1.5 bg-white border border-neutral-surface px-3 py-2 rounded">
+                  ✅ Satellite Secured High Frequency GPS Track
+                </span>
+                <span className="flex items-center gap-1.5 bg-white border border-neutral-surface px-3 py-2 rounded">
+                  ✅ Active Mobile Geolocation Auto-SMS Dispatch
+                </span>
+              </div>
+            </div>
+
+            {/* Interactive SOS Trigger Panel with Simulation */}
+            <div className="bg-white border-2 border-brand-primary/20 rounded-xl p-5 flex flex-col items-center text-center space-y-4 shadow-sm relative">
+              <span className="text-[9px] uppercase font-bold tracking-widest text-rose-600 block bg-rose-50 px-2.5 py-1 rounded">
+                SIMULATOR EMERGENCY TRIGGER
+              </span>
+
+              {/* State controller for simulation */}
+              <SOSAlarmWidget />
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================== WHAT WE OFFER PROMO SECTION (Image 2) ==================== */}
+        <section id="offers-promotional" className="space-y-6 pt-4 animate-fadeIn">
+          <div className="text-center max-w-xl mx-auto mb-4 font-primary text-text-primary">
+            <span className="text-brand-primary font-primary font-bold text-xs tracking-widest uppercase block mb-1">PROMOTIONAL OFFERINGS</span>
+            <h2 className="font-primary text-3xl md:text-4xl text-text-primary uppercase font-bold tracking-tight">WHAT WE OFFER</h2>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Safe, affordable, and incredibly reliable transport services engineered for everyday late-night commutations and female-travel privacy.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                title: 'Quick Pickup',
+                desc: 'Pickups within minutes that help you save time on every ride. A Pink-Shield safe auto, bike-taxi or premium cab cruiser is always nearby when you need to get moving.',
+                img: 'https://images.unsplash.com/photo-1485291571150-772bcfc10da5?auto=format&fit=crop&q=80&w=400'
+              },
+              {
+                title: 'Best Fares',
+                desc: 'Affordable prices designed for everyday rides. Travel more files or commutes, spend less without compromising on premium comfort or live monitoring telemetry.',
+                img: 'https://images.unsplash.com/photo-1511289081367-46c54b57c82c?auto=format&fit=crop&q=80&w=400'
+              },
+              {
+                title: 'Never Too Far',
+                desc: 'Present across 400+ cities and counting. Wherever you go, find a secure, reliable ride close by with active SOS corridors and vetted captain support.',
+                img: 'https://images.unsplash.com/photo-1469037552275-d4d54ab65557?auto=format&fit=crop&q=80&w=400'
+              }
+            ].map((off, idx) => (
+              <div 
+                key={idx}
+                className="bg-white border border-neutral-surface hover:border-brand-primary rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col"
+              >
+                {/* Visual Card image with subtle rounded frame inside */}
+                <div className="h-44 w-full overflow-hidden relative">
+                  <img 
+                    src={off.img} 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                    alt={off.title}
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                
+                {/* Content */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-1.5 text-left">
+                    <h3 className="font-primary text-lg font-bold uppercase text-text-primary">
+                      {off.title}
+                    </h3>
+                    <p className="text-[11px] text-text-secondary leading-relaxed">
+                      {off.desc}
+                    </p>
+                  </div>
+                  
+                  <button 
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      handleScrollToSection('menu');
+                    }}
+                    className="text-[11px] font-bold font-primary uppercase tracking-wider text-[#C8553D] hover:text-[#222] transition-colors border-t pt-2 w-full text-left flex items-center justify-between"
+                  >
+                    <span>Request Fleet Match Now</span>
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Section 2: Fleet standards and logs */}
         <section className="space-y-4">
           
@@ -299,7 +572,7 @@ export default function App() {
               >
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 flex-shrink-0">
                   <img 
-                    src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=150" 
+                    src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=150" 
                     className="w-full h-full object-cover" 
                     alt="Sovereign Sedan"
                     referrerPolicy="no-referrer"
@@ -307,31 +580,10 @@ export default function App() {
                 </div>
                 <div>
                   <div className="flex justify-between items-center">
-                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary">Sovereign Sedan</h4>
-                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">$15.50</span>
+                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary text-left">Safe Shield Bike</h4>
+                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">₹45.00</span>
                   </div>
-                  <p className="text-[10px] text-text-secondary leading-normal">Premium pneumatic air ride caddy caddie. Click to add.</p>
-                </div>
-              </div>
-
-              <div 
-                onClick={() => handleAddSimpleItemToCart(rideOptions[1])}
-                className="bg-neutral-surface rounded-card p-3.5 flex items-center gap-3.5 flex-1 cursor-pointer hover:bg-neutral-surface/80 hover:shadow-xs transition-all border border-neutral-surface/30"
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 flex-shrink-0">
-                  <img 
-                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=150" 
-                    className="w-full h-full object-cover" 
-                    alt="Volcano Sporty"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary">Volcano Express</h4>
-                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">$18.50</span>
-                  </div>
-                  <p className="text-[10px] text-text-secondary leading-normal">Rapid transit intercity charger with sports setup.</p>
+                  <p className="text-[10px] text-text-secondary leading-normal text-left">ISI helmet for women, vetted rider. Click to add.</p>
                 </div>
               </div>
 
@@ -341,7 +593,7 @@ export default function App() {
               >
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 flex-shrink-0">
                   <img 
-                    src="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=150" 
+                    src="https://images.unsplash.com/photo-1566008889975-f286f4553e20?auto=format&fit=crop&q=80&w=150" 
                     className="w-full h-full object-cover" 
                     alt="Kyoto EV"
                     referrerPolicy="no-referrer"
@@ -349,10 +601,31 @@ export default function App() {
                 </div>
                 <div>
                   <div className="flex justify-between items-center">
-                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary">Electric Whisper</h4>
-                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">$15.00</span>
+                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary text-left">Pink Shield Auto</h4>
+                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">₹75.00</span>
                   </div>
-                  <p className="text-[10px] text-text-secondary leading-normal">Ultra quiet EV with active sandalwood diffuser.</p>
+                  <p className="text-[10px] text-text-secondary leading-normal text-left">Women preferred captain, panic siren & live track.</p>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => handleAddSimpleItemToCart(rideOptions[4])}
+                className="bg-neutral-surface rounded-card p-3.5 flex items-center gap-3.5 flex-1 cursor-pointer hover:bg-neutral-surface/80 hover:shadow-xs transition-all border border-neutral-surface/30"
+              >
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 flex-shrink-0">
+                  <img 
+                    src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=150" 
+                    className="w-full h-full object-cover" 
+                    alt="Volcano Sporty"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-primary text-xs font-bold uppercase text-text-primary text-left">Queen Shield Cab</h4>
+                    <span className="font-primary text-xs text-brand-primary font-bold ml-2">₹190.00</span>
+                  </div>
+                  <p className="text-[10px] text-text-secondary leading-normal text-left">Polymer safety side partition screen, live SOS video link.</p>
                 </div>
               </div>
             </div>
@@ -372,11 +645,6 @@ export default function App() {
           </h2>
         </section>
 
-        {/* Live customizer workshop */}
-        <section id="builder">
-          <BowlCustomizer onAddCustomBowl={handleAddCustomBowlToCart} />
-        </section>
-
         {/* Section 4: Dynamic Top Picks filter catalog grid */}
         <section id="menu-anchor" className="space-y-6 pt-5">
           <div className="bg-brand-primary text-white text-center py-3.5 rounded-t-card font-primary font-bold tracking-widest uppercase text-sm">
@@ -386,12 +654,10 @@ export default function App() {
           {/* Filter Categories tab links */}
           <div className="flex flex-wrap justify-center gap-2 bg-neutral-surface p-2 rounded-b-card border-x border-b border-neutral-surface/30">
             {([
-              { id: 'all', label: 'All Fleet & Gear' },
-              { id: 'standard', label: 'Cruiser Sedans' },
-              { id: 'premium', label: 'Luxury Specials' },
-              { id: 'hourly', label: 'Hourly Chauffeurs' },
-              { id: 'side', label: 'Comfort Add-Ons' },
-              { id: 'beverage', label: 'Onboard Drinks' }
+              { id: 'all', label: 'All Services' },
+              { id: 'bike', label: 'Bike-Taxis' },
+              { id: 'auto', label: 'Autos' },
+              { id: 'cab', label: 'Cabs' }
             ] as const).map(cat => (
               <button
                 key={cat.id}
@@ -454,8 +720,8 @@ export default function App() {
 
                     <div className="pt-4 border-t border-[#222]/10 flex justify-between items-center">
                       <span className="font-primary font-bold text-lg text-[#222]">
-                        ${item.price.toFixed(2)}
-                        {item.category === 'standard' || item.category === 'premium' ? <span className="text-xs font-normal text-gray-500"> / km rate</span> : null}
+                        ₹{item.price.toFixed(2)}
+                        {item.category === 'bike' || item.category === 'auto' || item.category === 'cab' ? <span className="text-xs font-normal text-gray-500"> / base rate</span> : null}
                       </span>
                       <button 
                         onClick={() => handleAddSimpleItemToCart(item)}
